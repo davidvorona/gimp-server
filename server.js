@@ -1,23 +1,45 @@
 const express = require("express");
 
 const PORT = 3000;
-const gimpLocations = {};
+const UPDATE_FREQUENCY = 5000;
+const IDLE_FACTOR = 3;
 
-function createOrUpdateGimpLocation(data) {
+function removeGimpLocation(name) {
+    console.log("Removing due to inactivity:", name);
+    delete gimpLocations[name];
+}
+
+const gimpIdleTimers = {};
+function startGimpIdleTimer(data) {
     const gimpName = data.name;
-    delete data.name;
+    if (gimpIdleTimers.hasOwnProperty(gimpName)) {
+        clearTimeout(gimpIdleTimers[gimpName]);
+    }
+    gimpIdleTimers[gimpName] = setTimeout(
+        () => removeGimpLocation(gimpName),
+        UPDATE_FREQUENCY * IDLE_FACTOR
+    );
+}
+
+function handleGimpBroadcast(data) {
+    createOrUpdateGimpLocation(data);
+    startGimpIdleTimer(data);
+}
+
+const gimpLocations = {};
+function createOrUpdateGimpLocation(data) {
+    const location = Object.assign({}, data);
+    const gimpName = data.name;
+    delete location.name;
     if (!gimpLocations.hasOwnProperty(gimpName)) {
+        console.log("Adding GIMP location:", gimpName);
         gimpLocations[gimpName] = {};
     }
     gimpLocations[gimpName] = {
-        x: parseInt(data.x, 10),
-        y: parseInt(data.y, 10),
-        plane: parseInt(data.plane, 10)
+        x: parseInt(location.x, 10),
+        y: parseInt(location.y, 10),
+        plane: parseInt(location.plane, 10)
     };
-}
-
-function removeGimpLocation(name) {
-    delete gimpLocations[name];
 }
 
 const app = express()
@@ -34,7 +56,7 @@ app.post("/broadcast", (req, res) => {
         if (!data) {
             return res.status(400).json({ err: "Location data is required" });
         }
-        createOrUpdateGimpLocation(data);
+        handleGimpBroadcast(data);
         res.json({ success: "Updated location" });
     } catch (err) {
         console.error(err);
