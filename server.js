@@ -24,7 +24,6 @@ const app = express()
     .use(express.urlencoded({ extended: false }))
     .use(express.json());
 
-// respond with "hello world" when a GET request is made to the homepage
 app.get("/ping", (req, res) => {
     res.json(gimpLocations);
 });
@@ -44,5 +43,5 @@ app.post("/broadcast", (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`App listening at http://localhost:${PORT}`)
+    console.log(`App listening at port ${PORT}`)
 });
