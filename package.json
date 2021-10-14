@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/davidvorona/gimp-server#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "socket.io": "^4.2.0"
   }
 }

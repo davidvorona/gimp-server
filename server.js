@@ -1,4 +1,6 @@
 const express = require("express");
+const http = require("http");
+const { Server } = require("socket.io");
 
 const PORT = 3000;
 const UPDATE_FREQUENCY = 5000;
@@ -64,6 +66,17 @@ app.post("/broadcast", (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`App listening at port ${PORT}`)
+const server = http.createServer(app);
+
+const io = new Server(server);
+io.on("connection", (socket) => {
+    console.log("Client connected");
+
+    io.on("ping", (data) => {
+        socket.emit("pong");
+    });
+});
+
+server.listen(PORT, () => {
+    console.log(`Listening on *:${PORT}`)
 });
