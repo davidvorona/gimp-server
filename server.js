@@ -49,7 +49,13 @@ const app = express()
     .use(express.json());
 
 app.get("/ping", (req, res) => {
-    res.json(gimpLocations);
+    try {
+        const data = gimpLocations;
+        res.json(data);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ err: "Failed to ping others' locations" });
+    }
 });
 
 app.post("/broadcast", (req, res) => {
@@ -70,10 +76,28 @@ const server = http.createServer(app);
 
 const io = new Server(server);
 io.on("connection", (socket) => {
-    console.log("Client connected");
+    console.log("Client connected:", socket.id);
 
-    io.on("ping", (data) => {
-        socket.emit("pong");
+    socket.on("broadcast", (data) => {
+        try {
+            if (!data) {
+                console.error("Location data is required");
+                return;
+            }
+            const dataObj = JSON.parse(data);
+            handleGimpBroadcast(dataObj);
+        } catch (err) {
+            console.error(err);
+        }
+    });
+
+    socket.on("ping", (callback) => {
+        try {
+            const data = gimpLocations;
+            callback(data);
+        } catch (err) {
+            console.error(err);
+        }
     });
 });
 
