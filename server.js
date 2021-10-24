@@ -74,32 +74,39 @@ app.post("/broadcast", (req, res) => {
 
 const server = http.createServer(app);
 
-const io = new Server(server);
-io.on("connection", (socket) => {
-    console.log("Client connected:", socket.id);
+if (!process.env.HTTP_ONLY) {
+    const io = new Server(server);
+    io.on("connection", (socket) => {
+        console.log("Client connected:", socket.id);
 
-    socket.on("broadcast", (data) => {
-        try {
-            if (!data) {
-                console.error("Location data is required");
-                return;
+        socket.on("disconnect", () => {
+            console.log("Client disconnected", socket.id);
+        });
+    
+        socket.on("ping", (callback) => {
+            try {
+                const data = gimpLocations;
+                callback(data);
+            } catch (err) {
+                console.error(err);
+                callback({ err: "Failed to ping others' locations" });
             }
-            const dataObj = JSON.parse(data);
-            handleGimpBroadcast(dataObj);
-        } catch (err) {
-            console.error(err);
-        }
-    });
+        });
 
-    socket.on("ping", (callback) => {
-        try {
-            const data = gimpLocations;
-            callback(data);
-        } catch (err) {
-            console.error(err);
-        }
+        socket.on("broadcast", (data, callback) => {
+            try {
+                if (!data) {
+                    return callback({ err: "Location data is required" })
+                }
+                handleGimpBroadcast(JSON.parse(data));
+                callback({ success: "Updated location" });
+            } catch (err) {
+                console.error(err);
+                callback({ err: "Failed to broadcast location" });
+            }
+        });
     });
-});
+}
 
 server.listen(PORT, () => {
     console.log(`Listening on *:${PORT}`)
