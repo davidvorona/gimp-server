@@ -28,7 +28,7 @@ app.get("/ping", (req, res) => {
         res.json(data);
     } catch (err) {
         console.error(err);
-        res.status(500).json({ err: "Failed to ping others' locations" });
+        res.status(500).json({ err: "Failed to ping others' data" });
     }
 });
 
@@ -36,13 +36,13 @@ app.post("/broadcast", (req, res) => {
     try {
         const data = req.body;
         if (!data) {
-            return res.status(400).json({ err: "Location data is required" });
+            return res.status(400).json({ err: "Gimp data is required" });
         }
         handleGimpBroadcast(data);
-        res.json({ success: "Updated location" });
+        res.json({ success: "Broadcasted gimp data" });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ err: "Failed to broadcast location" });
+        res.status(500).json({ err: "Failed to broadcast gimp data" });
     }
 });
 
@@ -59,11 +59,11 @@ if (!process.env.HTTP_ONLY) {
         
         socket.on("ping", (callback) => {
             try {
-                const data = gimpLocations;
+                const data = gimps;
                 callback(data);
             } catch (err) {
                 console.error(err);
-                callback({ err: "Failed to ping others' locations" });
+                callback({ err: "Failed to ping others' data" });
             }
         });
 
