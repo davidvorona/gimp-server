@@ -14,7 +14,7 @@ class GroupIronmanPlayer {
     /**
      * @member {string}
      */
-    username = "";
+    name = "";
 
     /**
      * @member {Location}
@@ -47,15 +47,15 @@ class GroupIronmanPlayer {
     maxPrayer = DEFAULT_MAX_PRAYER;
 
     /**
-     * @param {string} username 
+     * @param {string} name 
      */
-    constructor(username) {
-        this.username = username;
+    constructor(name) {
+        this.name = name;
     }
 
     getData() {
         return {
-            name: this.username,
+            name: this.name,
             customStatus: this.customStatus,
             location: this.location,
             hp: this.hp,
