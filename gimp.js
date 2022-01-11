@@ -34,7 +34,7 @@ class GroupIronmanPlayer {
     /**
      * @member {number} 
      */
-    hpMax = DEFAULT_MAX_HP;
+    maxHp = DEFAULT_MAX_HP;
 
     /**
      * @member {number}
@@ -44,7 +44,7 @@ class GroupIronmanPlayer {
     /**
      * @member {number}
      */
-    prayerMax = DEFAULT_MAX_PRAYER;
+    maxPrayer = DEFAULT_MAX_PRAYER;
 
     /**
      * @param {string} username 
@@ -59,9 +59,9 @@ class GroupIronmanPlayer {
             customStatus: this.customStatus,
             location: this.location,
             hp: this.hp,
-            hpMax: this.hpMax,
+            maxHp: this.maxHp,
             prayer: this.prayer,
-            prayerMax: this.prayerMax
+            maxPrayer: this.maxPrayer
         };
     }
 
@@ -115,7 +115,7 @@ class GroupIronmanPlayer {
         if (typeof hp !== "number") {
             throw new Error("Invalid HP max", hp);
         }
-        this.hpMax = hp;
+        this.maxHp = hp;
     }
 
     updatePrayer(prayer) {
@@ -129,7 +129,7 @@ class GroupIronmanPlayer {
         if (typeof prayer !== "number") {
             throw new Error("Invalid prayer max", prayer);
         }
-        this.prayerMax = prayer;
+        this.maxPrayer = prayer;
     }
 
     updateCustomStatus(customStatus) {
