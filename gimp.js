@@ -89,13 +89,12 @@ class GroupIronmanPlayer {
     updateLocation(location) {
         if (typeof location.x !== "number") {
             throw new Error("Invalid x coordinate", location.x);
-
         }
         if (typeof location.y !== "number") {
-                throw new Error("Invalid y coordinate", location.y);
+            throw new Error("Invalid y coordinate", location.y);
         }
         if (typeof location.plane !== "number") {
-                throw new Error("Invalid plane coordinate", location.plane);
+            throw new Error("Invalid plane coordinate", location.plane);
         }
         this.location = {
             x: parseInt(location.x, 10),

@@ -11,7 +11,7 @@ function handleGimpBroadcast(data) {
     if (!gimpName) {
         throw new Error("Name is required in broadcast data");
     }
-    if (!gimps.hasOwnProperty(gimpName)) {
+    if (!gimps[gimpName]) {
         gimps[gimpName] = new Gimp(gimpName);
     }
     const gimp = gimps[gimpName];
