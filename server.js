@@ -3,7 +3,7 @@ const http = require("http");
 const { Server } = require("socket.io");
 const Gimp = require("./gimp");
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 const gimps = {};
 function handleGimpBroadcast(data) {

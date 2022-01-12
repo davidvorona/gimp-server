@@ -17,7 +17,7 @@ Whether you are on a local machine or connected to a hosted one, you must:
 2. Install the dependencies: `npm install`
 3. Run the server: `npm start`
 
-At this point your server will be listening at the IP of the machine running it, and on port `3000`. For hosted servers, this IP and port will be the values entered in the plugin settings for each client. If you are running it on a local machine, refer to the special instructions below.
+At this point your server will be listening at the IP of the machine running it and at a port specified by your host, falling back on port `3000`. For hosted servers, this IP and port will be the values entered in the plugin settings for each client. If you are running it on a local machine, refer to the special instructions below.
 
 ### Local machine
 
