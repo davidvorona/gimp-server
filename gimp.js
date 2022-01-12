@@ -47,6 +47,11 @@ class GroupIronmanPlayer {
     maxPrayer = DEFAULT_MAX_PRAYER;
 
     /**
+     * @member {boolean} ghostMode
+     */
+    ghostMode = false;
+
+    /**
      * @param {string} name 
      */
     constructor(name) {
@@ -54,47 +59,58 @@ class GroupIronmanPlayer {
     }
 
     getData() {
-        return {
+        const data = {
             name: this.name,
             customStatus: this.customStatus,
             location: this.location,
             hp: this.hp,
             maxHp: this.maxHp,
             prayer: this.prayer,
-            maxPrayer: this.maxPrayer
+            maxPrayer: this.maxPrayer,
+            ghostMode: this.ghostMode
         };
+        return data;
     }
 
     update(data) {
         if (data.location) {
             this.updateLocation(data.location);
         }
-        if (data.hp) {
+        // Must support a value of 0
+        if (typeof data.hp === "number") {
             this.updateHp(data.hp);
         }
-        if (data.maxHp) {
+        // Must support a value of 0
+        if (typeof data.maxHp === "number") {
             this.updateMaxHp(data.maxHp);
         }
-        if (data.prayer) {
+        // Must support a value of 0
+        if (typeof data.prayer === "number") {
             this.updatePrayer(data.prayer);
         }
-        if (data.maxPrayer) {
+        // Must support a value of 0
+        if (typeof data.maxPrayer === "number") {
             this.updateMaxPrayer(data.maxPrayer);
         }
-        if (data.customStatus) {
+        // Must support empty string
+        if (typeof data.customStatus === "string") {
             this.updateCustomStatus(data.customStatus);
+        }
+        // Must accept a false value
+        if (typeof data.ghostMode === "boolean") {
+            this.handleGhostMode(data.ghostMode);
         }
     }
 
     updateLocation(location) {
         if (typeof location.x !== "number") {
-            throw new Error("Invalid x coordinate", location.x);
+            throw new Error("Invalid x coordinate: " + location.x);
         }
         if (typeof location.y !== "number") {
-            throw new Error("Invalid y coordinate", location.y);
+            throw new Error("Invalid y coordinate: " + location.y);
         }
         if (typeof location.plane !== "number") {
-            throw new Error("Invalid plane coordinate", location.plane);
+            throw new Error("Invalid plane coordinate: " + location.plane);
         }
         this.location = {
             x: parseInt(location.x, 10),
@@ -105,37 +121,49 @@ class GroupIronmanPlayer {
 
     updateHp(hp) {
         if (typeof hp !== "number") {
-            throw new Error("Invalid HP value", hp);
+            throw new Error("Invalid HP value: " + hp);
         }
         this.hp = hp;
     }
 
     updateMaxHp(hp) {
         if (typeof hp !== "number") {
-            throw new Error("Invalid HP max", hp);
+            throw new Error("Invalid HP max: " + hp);
         }
         this.maxHp = hp;
     }
 
     updatePrayer(prayer) {
         if (typeof prayer !== "number") {
-            throw new Error("Invalid prayer value", prayer);
+            throw new Error("Invalid prayer value: " + prayer);
         }
         this.prayer = prayer;
     }
 
     updateMaxPrayer(prayer) {
         if (typeof prayer !== "number") {
-            throw new Error("Invalid prayer max", prayer);
+            throw new Error("Invalid prayer max: " + prayer);
         }
         this.maxPrayer = prayer;
     }
 
     updateCustomStatus(customStatus) {
         if (typeof customStatus !== "string") {
-            throw new Error("Invalid custom status", customStatus);
+            throw new Error("Invalid custom status: " + customStatus);
         }
         this.customStatus = customStatus;
+    }
+
+    handleGhostMode(ghostMode) {
+        if (typeof ghostMode !== "boolean") {
+            throw new Error("Invalid ghost mode value: " + ghostMode);
+        }
+        this.ghostMode = ghostMode;
+        // Remove current location if ghost mode is enabled,
+        // client will no longer send location updates
+        if (this.ghostMode) {
+            delete this.location;
+        }
     }
 }
 

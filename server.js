@@ -74,7 +74,7 @@ if (!process.env.HTTP_ONLY) {
                 }
                 const gimpData = JSON.parse(data);
                 handleGimpBroadcast(gimpData);
-                io.emit("broadcast", gimpData);
+                socket.broadcast.emit("broadcast", gimpData);
                 callback({ success: "Broadcasted gimp data" });
             } catch (err) {
                 console.error(err);
