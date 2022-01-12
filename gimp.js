@@ -52,6 +52,11 @@ class GroupIronmanPlayer {
     ghostMode = false;
 
     /**
+     * @member {string} lastActivity;
+     */
+    lastActivity = "";
+
+    /**
      * @param {string} name 
      */
     constructor(name) {
@@ -67,7 +72,8 @@ class GroupIronmanPlayer {
             maxHp: this.maxHp,
             prayer: this.prayer,
             maxPrayer: this.maxPrayer,
-            ghostMode: this.ghostMode
+            ghostMode: this.ghostMode,
+            lastActivity: this.lastActivity
         };
         return data;
     }
@@ -99,6 +105,9 @@ class GroupIronmanPlayer {
         // Must accept a false value
         if (typeof data.ghostMode === "boolean") {
             this.handleGhostMode(data.ghostMode);
+        }
+        if (data.lastActivity) {
+            this.updateLastActivity(data.lastActivity);
         }
     }
 
@@ -164,6 +173,13 @@ class GroupIronmanPlayer {
         if (this.ghostMode) {
             delete this.location;
         }
+    }
+
+    updateLastActivity(activity) {
+        if (typeof activity !== "string") {
+            throw new Error("Invalid activity value: " + activity);
+        }
+        this.lastActivity = activity;
     }
 }
 
