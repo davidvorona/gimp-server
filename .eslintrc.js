@@ -21,6 +21,6 @@ module.exports = {
         "quote-props": ["error", "consistent"],
         "arrow-parens": ["error", "as-needed", { "requireForBlockBody": true }],
         "semi": ["error", "always"],
-        "max-len": ["error", { "code": 80, "ignoreUrls": true }]
+        "max-len": ["error", { "code": 100, "ignoreUrls": true }]
     }
 };

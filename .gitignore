@@ -105,3 +105,6 @@ dist
 
 # VSCode
 .vscode/
+
+# App-specific
+gimps.json
