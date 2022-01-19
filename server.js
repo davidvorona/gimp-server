@@ -99,6 +99,7 @@ function handleGimpBroadcast(groupName, data) {
 
 gimpStorageTask();
 
+let io;
 const app = express()
     .use(express.urlencoded({ extended: false }))
     .use(express.json());
@@ -120,6 +121,11 @@ app.post("/broadcast/:groupName", (req, res) => {
             return res.status(400).json({ err: "Gimp data is required" });
         }
         handleGimpBroadcast(req.params.groupName, data);
+        // If socket server exists, try to broadcast to room
+        if (io) {
+            const roomId = req.params.groupName;
+            io.to(roomId).emit("broadcast", data);
+        }
         res.json({ success: "Broadcasted gimp data" });
     } catch (err) {
         console.error(err);
@@ -130,7 +136,7 @@ app.post("/broadcast/:groupName", (req, res) => {
 const server = http.createServer(app);
 
 if (!process.env.HTTP_ONLY) {
-    const io = new Server(server);
+    io = new Server(server);
     io.on("connection", (socket) => {
         console.log("Client connected:", socket.id);
         let roomId;
