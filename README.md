@@ -1,3 +1,6 @@
+**NOTE:** *THE VERSION OF THE PLUGIN CURRENTLY ON THE PLUGIN HUB DOES NOT SUPPORT THIS VERSION OF THE SERVER.
+PLEASE FIX YOUR SERVER TO [THIS COMMIT](https://github.com/davidvorona/gimp-server/tree/8bba493c21ce867bbaced5bf0c972a7506457902). YOU CAN KEEP TABS ON THE STATUS OF V2 OF THE PLUGIN [HERE](https://github.com/runelite/plugin-hub/pull/2314).*
+
 # gimp-server
 
 A Node server that handles requests from the group ironman plugin ([GIMP](https://github.com/davidvorona/gim-plugin)).
