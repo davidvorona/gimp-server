@@ -8,65 +8,72 @@ const PORT = process.env.PORT || 3000;
 const DATA_FILE_PATH = "./gimps.json";
 const THIRTY_SEC = 30000;
 
-// Create storage accessor for gimps.json
-const gimpStorage = new Storage(DATA_FILE_PATH);
-
-// One-time flag that sets to true when gimp data is loaded
-let __DATA_LOADED__ = false;
 // Map of group to gimp data: Map<groupName,Map<gimpName,{...}>>
 const groups = {};
 
-/**
- * Reads the file store and terminates the process if it throws
- * an error. If successful, loads gimp data stored in the file
- * into an in-memory object.
- */
-async function loadGimpStorage() {
-    if (__DATA_LOADED__) {
-        console.warn("Data already loaded, aborting");
-        return;
-    }
-    try {
-        const gimpData = await gimpStorage.readJson();
-        Object.keys(gimpData).forEach((groupName) => {
-            groups[groupName] = {};
-            Object.keys(gimpData[groupName]).forEach((gimpName) => {
-                groups[groupName][gimpName] = new Gimp(gimpName);
-                groups[groupName][gimpName].update(gimpData[groupName][gimpName]);
-            });
-        });
-        console.log("Loaded gimp data:", groups);
-    } catch (err) {
-        if (err.name === "SyntaxError") {
-            console.error(new Error("Data not initialized or corrupted, aborting"));
-        } else if (err.code === "ENOENT") {
-            console.error(new Error("No data file found, aborting"));
-        } else console.error(err);
-        process.exit(1);
-    } finally {
-        __DATA_LOADED__ = true;
-    }
-}
+// TODO: Enable storage when prod environment supports it
+const ENABLE_STORAGE = false;
+if (ENABLE_STORAGE) {
+    // Create storage accessor for gimps.json
+    const gimpStorage = new Storage(DATA_FILE_PATH);
 
-/**
- * Starts a task that loads stored gimp data and updates
- * the file store every 30 secs.
- */
-async function gimpStorageTask() {
-    // Load gimp data into object
-    await loadGimpStorage();
-    // Every interval, update gimp data
-    setInterval(async () => {
-        try {
-            // Validate group data exists, then write
-            if (groups && Object.keys(groups).length) {
-                console.log("Writing gimp data:", groups);
-                await gimpStorage.write(groups);
-            }
-        } catch (err) {
-            console.error(err);
+    // One-time flag that sets to true when gimp data is loaded
+    let __DATA_LOADED__ = false;
+
+    /**
+     * Reads the file store and terminates the process if it throws
+     * an error. If successful, loads gimp data stored in the file
+     * into an in-memory object.
+     */
+    const loadGimpStorage = async () => {
+        if (__DATA_LOADED__) {
+            console.warn("Data already loaded, aborting");
+            return;
         }
-    }, THIRTY_SEC);
+        try {
+            const gimpData = await gimpStorage.readJson();
+            Object.keys(gimpData).forEach((groupName) => {
+                groups[groupName] = {};
+                Object.keys(gimpData[groupName]).forEach((gimpName) => {
+                    groups[groupName][gimpName] = new Gimp(gimpName);
+                    groups[groupName][gimpName].update(gimpData[groupName][gimpName]);
+                });
+            });
+            console.log("Loaded gimp data:", groups);
+        } catch (err) {
+            if (err.name === "SyntaxError") {
+                console.error(new Error("Data not initialized or corrupted, aborting"));
+            } else if (err.code === "ENOENT") {
+                console.error(new Error("No data file found, aborting"));
+            } else console.error(err);
+            process.exit(1);
+        } finally {
+            __DATA_LOADED__ = true;
+        }
+    };
+
+    /**
+     * Starts a task that loads stored gimp data and updates
+     * the file store every 30 secs.
+     */
+    const gimpStorageTask = async () => {
+        // Load gimp data into object
+        await loadGimpStorage();
+        // Every interval, update gimp data
+        setInterval(async () => {
+            try {
+                // Validate group data exists, then write
+                if (groups && Object.keys(groups).length) {
+                    console.log("Writing gimp data:", groups);
+                    await gimpStorage.write(groups);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }, THIRTY_SEC);
+    };
+
+    gimpStorageTask();
 }
 
 /**
@@ -96,8 +103,6 @@ function handleGimpBroadcast(groupName, data) {
     // Update gimp
     gimp.update(data);
 }
-
-gimpStorageTask();
 
 let io;
 const app = express()
