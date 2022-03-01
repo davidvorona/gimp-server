@@ -138,6 +138,37 @@ app.post("/broadcast/:groupName", (req, res) => {
     }
 });
 
+app.get("/stats", (req, res) => {
+    try {
+        let roomsCount, clientsCount;
+        // Count of groups that are stored on the server (connected or not)
+        const groupsCount = Object.keys(groups).length;
+        if (io) {
+            // Count of currently connected groups
+            roomsCount = Object.keys(io.sockets.adapter.rooms).length;
+            // Count of currently connected users
+            clientsCount = io.engine.clientsCount;
+        }
+        res.json([
+            {
+                description: "The number of groups stored on the server.",
+                data: groupsCount
+            },
+            {
+                description: "The number of groups currently connected to the server.",
+                data: roomsCount
+            },
+            {
+                description: "The number of users currently connected to the server.",
+                data: clientsCount
+            }
+        ]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ err: "Failed to get server stats" });
+    }
+});
+
 const server = http.createServer(app);
 
 if (!process.env.HTTP_ONLY) {
