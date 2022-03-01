@@ -145,7 +145,9 @@ app.get("/stats", (req, res) => {
         const groupsCount = Object.keys(groups).length;
         if (io) {
             // Count of currently connected groups
-            roomsCount = Object.keys(io.sockets.adapter.rooms).length;
+            const socketRooms = io.of("/").adapter.rooms;
+            const connectedGroups = Object.keys(groups).filter(g => socketRooms.has(g));
+            roomsCount = connectedGroups.length;
             // Count of currently connected users
             clientsCount = io.engine.clientsCount;
         }
