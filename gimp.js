@@ -57,6 +57,11 @@ class GroupIronmanPlayer {
     lastActivity = "";
 
     /**
+     * @member {Object.<string, number>} skillsXp;
+     */
+    skillsXp = {};
+
+    /**
      * @param {string} name 
      */
     constructor(name) {
@@ -73,7 +78,8 @@ class GroupIronmanPlayer {
             prayer: this.prayer,
             maxPrayer: this.maxPrayer,
             ghostMode: this.ghostMode,
-            lastActivity: this.lastActivity
+            lastActivity: this.lastActivity,
+            skillsXp: this.skillsXp
         };
         return data;
     }
@@ -109,6 +115,9 @@ class GroupIronmanPlayer {
         if (data.lastActivity) {
             this.updateLastActivity(data.lastActivity);
         }
+        if (data.skillsXp) {
+            this.updateSkillsXp(data.skillsXp);
+        }
     }
 
     updateLocation(location) {
@@ -126,6 +135,19 @@ class GroupIronmanPlayer {
             y: parseInt(location.y, 10),
             plane: parseInt(location.plane, 10)
         };
+    }
+
+    updateSkillsXp(skillsXp) {
+        Object.keys(skillsXp).forEach((skill) => {
+            if (typeof skill !== "string") {
+                throw new Error("Invalid skill type: " + skill);
+            }
+            const xpValue = skillsXp[skill];
+            if (typeof xpValue !== "number") {
+                throw new Error("Invalid XP value: " + xpValue);
+            }
+            this.skillsXp[skill] = xpValue;
+        });
     }
 
     updateHp(hp) {
