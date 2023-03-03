@@ -22,11 +22,6 @@ class GroupIronmanPlayer {
     location = {};
 
     /**
-     * @member {string}
-     */
-    customStatus = "";
-
-    /**
      * @member {number}
      */
     hp = DEFAULT_CURRENT_HP;
@@ -57,6 +52,11 @@ class GroupIronmanPlayer {
     lastActivity = "";
 
     /**
+     * @member {string} notes
+     */
+    notes = "";
+
+    /**
      * @param {string} name 
      */
     constructor(name) {
@@ -66,14 +66,14 @@ class GroupIronmanPlayer {
     getData() {
         const data = {
             name: this.name,
-            customStatus: this.customStatus,
             location: this.location,
             hp: this.hp,
             maxHp: this.maxHp,
             prayer: this.prayer,
             maxPrayer: this.maxPrayer,
             ghostMode: this.ghostMode,
-            lastActivity: this.lastActivity
+            lastActivity: this.lastActivity,
+            notes: this.notes
         };
         return data;
     }
@@ -99,8 +99,8 @@ class GroupIronmanPlayer {
             this.updateMaxPrayer(data.maxPrayer);
         }
         // Must support empty string
-        if (typeof data.customStatus === "string") {
-            this.updateCustomStatus(data.customStatus);
+        if (typeof data.notes === "string") {
+            this.updateNotes(data.notes);
         }
         // Must accept a false value
         if (typeof data.ghostMode === "boolean") {
@@ -156,11 +156,11 @@ class GroupIronmanPlayer {
         this.maxPrayer = prayer;
     }
 
-    updateCustomStatus(customStatus) {
-        if (typeof customStatus !== "string") {
-            throw new Error("Invalid custom status: " + customStatus);
+    updateNotes(notes) {
+        if (typeof notes !== "string") {
+            throw new Error("Invalid notes: " + notes);
         }
-        this.customStatus = customStatus;
+        this.notes = notes;
     }
 
     handleGhostMode(ghostMode) {
