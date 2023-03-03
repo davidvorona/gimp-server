@@ -160,7 +160,8 @@ class GroupIronmanPlayer {
         if (typeof notes !== "string") {
             throw new Error("Invalid notes: " + notes);
         }
-        this.notes = notes;
+        const MAX_NOTE_LENGTH = 2000;
+        this.notes = notes.substring(0, MAX_NOTE_LENGTH);
     }
 
     handleGhostMode(ghostMode) {
