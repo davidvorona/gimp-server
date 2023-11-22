@@ -104,6 +104,22 @@ function handleGimpBroadcast(groupName, data) {
     gimp.update(data);
 }
 
+/**
+ * Scrubs each GimPlayer in a group of all data except name and
+ * ghostMode fields if ghost mode is enabled.
+ * 
+ * @param {string} roomId
+ */
+function scrubGroupData(roomId) {
+    const group = groups[roomId];
+    const data = {};
+    for (let gimpName in group) {
+        const gimpData = group[gimpName].scrubData(group[gimpName]);
+        data[gimpData];
+    }
+    return data;
+}
+
 let io;
 const app = express()
     .use(express.urlencoded({ extended: false }))
@@ -111,7 +127,7 @@ const app = express()
 
 app.get("/ping/:groupName", (req, res) => {
     try {
-        const data = groups[req.params.groupName];
+        const data = scrubGroupData(req.params.groupName);
         res.json(data);
     } catch (err) {
         console.error(err);
@@ -129,7 +145,9 @@ app.post("/broadcast/:groupName", (req, res) => {
         // If socket server exists, try to broadcast to room
         if (io) {
             const roomId = req.params.groupName;
-            io.to(roomId).emit("broadcast", data);
+            const gimp = groups[roomId][data.name];
+            const sanitized = gimp.scrubData(data);
+            io.to(roomId).emit("broadcast", sanitized);
         }
         res.json({ success: "Broadcasted gimp data" });
     } catch (err) {
@@ -195,7 +213,7 @@ if (!process.env.HTTP_ONLY) {
                 if (!roomId) {
                     throw new Error("No room ID defined for this socket");
                 }
-                const data = groups[roomId];
+                const data = scrubGroupData(roomId);
                 callback(data);
             } catch (err) {
                 console.error(err);
@@ -213,7 +231,9 @@ if (!process.env.HTTP_ONLY) {
                 }
                 const gimpData = JSON.parse(data);
                 handleGimpBroadcast(roomId, gimpData);
-                socket.to(roomId).emit("broadcast", gimpData);
+                const gimp = groups[roomId][gimpData.name];
+                const sanitized = gimp.scrubData(data);
+                socket.to(roomId).emit("broadcast", sanitized);
                 callback({ success: "Broadcasted gimp data" });
             } catch (err) {
                 console.error(err);

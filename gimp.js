@@ -78,6 +78,19 @@ class GroupIronmanPlayer {
         return data;
     }
 
+    /**
+     * Scrubs data from the object if ghost mode is enabled.
+     * 
+     * @param {Object<string, Object>} data 
+     */
+    scrubData(data) {
+        if (this.ghostMode) {
+            // Always include the name (and ghostMode if its included)
+            return { name: data.name || this.name, ghostMode: data.ghostMode };
+        }
+        return data;
+    }
+
     update(data) {
         if (data.location) {
             this.updateLocation(data.location);
